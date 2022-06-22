@@ -1,45 +1,53 @@
 import React, { useRef, useEffect } from 'react';
-import WebViewer from '@pdftron/pdfjs-express';
 import './App.css';
+import Pdf from './Pdf';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link
+} from "react-router-dom";
 
 const App = () => {
-  const viewer = useRef(null);
-
-  // if using a class, equivalent of componentDidMount 
-  useEffect(() => {
-    WebViewer(
-      {
-        path: '/webviewer/lib',
-        initialDoc: '/files/pdftron_about.pdf',
-      },
-      viewer.current,
-    ).then((instance) => {
-      const { docViewer, Annotations } = instance;
-      const annotManager = docViewer.getAnnotationManager();
-
-      docViewer.on('documentLoaded', () => {
-        const rectangleAnnot = new Annotations.RectangleAnnotation();
-        rectangleAnnot.PageNumber = 1;
-        // values are in page coordinates with (0, 0) in the top left
-        rectangleAnnot.X = 100;
-        rectangleAnnot.Y = 150;
-        rectangleAnnot.Width = 200;
-        rectangleAnnot.Height = 50;
-        rectangleAnnot.Author = annotManager.getCurrentUser();
-
-        annotManager.addAnnotation(rectangleAnnot);
-        // need to draw the annotation otherwise it won't show up until the page is refreshed
-        annotManager.redrawAnnotation(rectangleAnnot);
-      });
-    });
-  }, []);
-
   return (
-    <div className="App">
-      <div className="header">React sample</div>
-      <div className="webviewer" ref={viewer}></div>
-    </div>
+    <Router>
+      <div className="App">
+        <div className="header">React sample</div>
+        <Link to="/">Home</Link>
+        <Link to="/about">About</Link>
+        <Link to="/dashboard">Dashboard</Link>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Routes>
+      </div>
+    </Router>
   );
 };
+
+function Home() {
+  return (
+    <div>
+      一覧画面
+    </div>
+  );
+}
+
+function About() {
+  return (
+    <div>
+      <Pdf/>
+    </div>
+  );
+}
+
+function Dashboard() {
+  return (
+    <div>
+      <Pdf/>
+    </div>
+  );
+}
 
 export default App;
